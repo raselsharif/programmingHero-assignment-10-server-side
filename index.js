@@ -83,6 +83,25 @@ app.get('/brands/:name',async (req, res)=>{
       res.send(result)
       
     }) 
+    //  update car
+    app.put('/cars/:id', async(req, res)=>{
+      const id = req.params.id;
+      const cars = req.body;
+      const filter = {_id:new ObjectId(id)}
+      const options = {upsert: true};
+      const updateCar = {
+     $set:{
+      image:cars.image,
+      name:cars.name,
+      brandName:cars.brandName,
+      price:cars.price,
+      rating:cars.rating,
+      details:cars.details,
+     }
+      } 
+      const result = await carCollections.updateOne(filter,updateCar,options);
+      res.send(result)
+    })
 // ========== cart CRUD =======
 app.post("/cart",async(req,res)=>{
 const cart = req.body;
@@ -94,6 +113,13 @@ app.get("/carts", async(req,res)=>{
 const cursor = cartCollections.find();
 const result =await cursor.toArray()
 res.send(result)
+})
+// delete a cart from DB
+app.delete('/cart/:id', async(req, res)=>{
+  const id = req.params.id;
+  const filter = {_id: new ObjectId(id)};
+  const result = await cartCollections.deleteOne(filter)
+  res.send(result)
 
 })
     // Send a ping to confirm a successful connection
