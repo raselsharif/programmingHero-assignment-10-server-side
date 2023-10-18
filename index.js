@@ -54,6 +54,20 @@ app.get('/brands/:name',async (req, res)=>{
     })
 
     // ======= CAR CRUD  =======
+    // get all car from DB
+    app.get('/cars',async(req,res)=>{
+      const cursor = carCollections.find();
+      const result = await cursor.toArray()
+      res.send(result);
+    })
+    // get car by brand name from DB
+    app.get('/cars/:id',async (req,res)=>{
+      const brand = req.params.id;
+      const filter = {brandName:brand}
+      const cars = carCollections.find(filter)
+      const result = await cars.toArray()
+      res.send(result)
+    })
     // insert CAR to DB
     app.post("/cars", async(req,res)=>{
       const cars = req.body;
