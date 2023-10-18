@@ -30,6 +30,7 @@ async function run() {
 const database = client.db("electronicsDB");
 const brandCollections = database.collection("brands");
 const carCollections = database.collection("cars");
+const cartCollections = database.collection("cart");
 
 // get all brands form DB
 app.get('/brands',async(req,res)=>{
@@ -61,11 +62,18 @@ app.get('/brands/:name',async (req, res)=>{
       res.send(result);
     })
     // get car by brand name from DB
-    app.get('/cars/:id',async (req,res)=>{
-      const brand = req.params.id;
+    app.get('/cars/:bybrand',async (req,res)=>{
+      const brand = req.params.bybrand;
       const filter = {brandName:brand}
       const cars = carCollections.find(filter)
       const result = await cars.toArray()
+      res.send(result)
+    })
+    // get car by ID from DB
+    app.get('/car/:id',async (req,res)=>{
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)}
+      const result =await carCollections.findOne(filter)
       res.send(result)
     })
     // insert CAR to DB
@@ -75,7 +83,19 @@ app.get('/brands/:name',async (req, res)=>{
       res.send(result)
       
     }) 
+// ========== cart CRUD =======
+app.post("/cart",async(req,res)=>{
+const cart = req.body;
+const result = await cartCollections.insertOne(cart);
+res.send(result)
+})
+// get all carts from DB
+app.get("/carts", async(req,res)=>{
+const cursor = cartCollections.find();
+const result =await cursor.toArray()
+res.send(result)
 
+})
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
